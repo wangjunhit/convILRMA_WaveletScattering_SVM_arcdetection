@@ -152,17 +152,15 @@ shiftSize = 2048;
 nb = 2; 
 it = 200; 
 type = 1; % 1 or 2 (1: ILRMA w/o partitioning function, 2: ILRMA with partitioning function)
-drawConv = false; % true or false (true: plot cost function values in each iteration and show convergence behavior, false: faster and do not plot cost function values)
-normalize = true; % true or false (true: apply normalization in each iteration of ILRMA to improve numerical stability, but the monotonic decrease of the cost function may be lost. false: do not apply normalization)
-% Fix random seed
+drawConv = false;
+normalize = true; 
 RandStream.setGlobalStream(RandStream('mt19937ar','Seed',seed))
 for i=1:100
     fprintf("Implementing the IVA: %4.0f \n",i);
-    [se_ilrma, ~]=bss_ILRMA(RandomICA_separatedSignal(2*(i-1)+1:2*i,:)',ns,nb,fftSize,shiftSize,it,type,refMic,drawConv,normalize);  %ivabss(RandomICA_separatedSignal(2*(i-1)+1:2*i,:),1024, 200);%FastICA(RandomICA_separatedSignal(2*(i-1)+1:2*i,:));  
+    [se_ilrma, ~]=bss_ILRMA(RandomICA_separatedSignal(2*(i-1)+1:2*i,:)',ns,nb,fftSize,shiftSize,it,type,refMic,drawConv,normalize);    
     Z= se_ilrma'
-    for j=1:2  %8
-        %Z(j,:)=SSA(Z(j,:),L,R)';
-        Z(j,:)=timeseriesnormalize(Z(j,:)); 
+    for j=1:2  
+       Z(j,:)=timeseriesnormalize(Z(j,:)); 
     end
     scat_features_demixed = featureMatrix(sn,Z');
     Nwin = size(scat_features_demixed,2);
@@ -170,7 +168,7 @@ for i=1:100
     scat_features_demixed = reshape(scat_features_demixed, size(scat_features_demixed,1)*size(scat_features_demixed,2),[]);
     predLabels_demixed= predict(model,scat_features_demixed);
     tempCount=0;
-    for j=1:2  %8
+    for j=1:2
         if predLabels_demixed(j)=="class 2"
             tempCount=tempCount+1;
         end
